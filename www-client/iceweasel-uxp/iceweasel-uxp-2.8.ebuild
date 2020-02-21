@@ -71,7 +71,8 @@ src_unpack() {
 		git reset --hard master
 	else
 		unpack v$UXP_VER.tar.gz
-		cd "${S}/application" && cp $FILESDIR/iceweasel-uxp-$IW_VER.tar.gz . || die "Failed to download application source (wget)"
+		#This is supposed to wget the iceweasel-uxp archive, but for some reason when emerging wget would crash. Added iceweasel-uxp to files dir
+		cd "${S}/application" && cp $FILESDIR/iceweasel-uxp-$IW_VER.tar.gz . || die "Failed to download application source"
 		tar -xzf iceweasel-uxp-$IW_VER.tar.gz || die "Failed to unpack application source"
 		mv "iceweasel-uxp-$IW_VER" "iceweasel-uxp" || die "Failed to remove version from application name (broken branding)"
 		ln -s "${S}/iceweasel-uxp-$IW_VER" "${S}/UXP-$UXP_VER/application/iceweasel-uxp"
@@ -102,6 +103,7 @@ pkg_pretend() {
 src_prepare() {
 	# Apply our application specific patches to UXP source tree
         eapply "${FILESDIR}"/0001-iceweasel-application-specific-overrides.patch
+		eapply "${FILESDIR}"/0007-gcc9_2_0-workaround.patch
 
 	# Drop -Wl,--as-needed related manipulation for ia64 as it causes ld sefgaults, bug #582432
 	if use ia64 ; then
