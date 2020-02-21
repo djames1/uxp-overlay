@@ -112,7 +112,6 @@ pkg_pretend() {
 src_prepare() {
 	# Apply our application specific patches to UXP source tree
         eapply "${FILESDIR}"/0001-iceweasel-application-specific-overrides.patch
-	eapply "${FILESDIR}"/0003-IW_Patch-WM_Class-name.patch
 
 	# Drop -Wl,--as-needed related manipulation for ia64 as it causes ld sefgaults, bug #582432
 	if use ia64 ; then
