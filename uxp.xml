@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+
+<repositories version="1.0">
+	<repo priority="50" quality="experimental" status="unofficial">
+		<name>uxp</name>
+		<description>Unofficial overlay to provide UXP based browsers excluding Pale Moon for Gentoo.</description>
+		<homepage>https://github.com/djames1/uxp-overlay</homepage>
+		<owner>
+			<email>djames@orcadian.net</email>
+		</owner>
+		<source type="git">https://github.com/djames1/uxp-overlay.git</source>
+	</repo>
+</repositories>
