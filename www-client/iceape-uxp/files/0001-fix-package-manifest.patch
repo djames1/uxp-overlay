@@ -1,0 +1,28 @@
+--- a/suite/installer/package-manifest.in 2020-01-12 11:05:21.000000000 -0500
++++ b/suite/installer/package-manifest.in        2020-02-22 06:59:48.520304259 -0500
+@@ -413,7 +413,6 @@
+ @RESPATH@/components/nsAsyncShutdown.js
+ @RESPATH@/components/nsBlocklistService.js
+ @RESPATH@/components/blocklist.manifest
+-@RESPATH@/components/nsBlocklistServiceContent.js
+ @RESPATH@/components/nsBrowserContentHandler.js
+ @RESPATH@/components/nsComposerCmdLineHandler.js
+ @RESPATH@/components/nsComposerCmdLineHandler.manifest
+@@ -889,7 +888,6 @@
+
+ [inspector]
+ #ifdef MOZ_OMNIJAR
+-@RESPATH@/distribution/extensions/inspector@mozilla.org.xpi
+ #else
+ @RESPATH@/extensions/inspector@mozilla.org/install.rdf
+ @RESPATH@/extensions/inspector@mozilla.org/chrome.manifest
+@@ -915,8 +913,3 @@
+ @RESPATH@/extensions/debugQA@mozilla.org/chrome/debugqa@JAREXT@
+ #endif
+ #endif
+-
+-#ifdef MOZ_CALENDAR
+-[calendar]
+-@RESPATH@/extensions/{ee86d35c-86ba-44f3-bd9d-854163f8f07a}/
+-#endif
+
