@@ -71,7 +71,7 @@ src_unpack() {
 		cd "${S}/application" && git clone $IW_REPO_URI || die "Failed to download application source (git)"
 		git reset --hard master
 	else
-		unpack UXP-$UXP_VER.tar.gz
+		unpack v$UXP_VER.tar.gz
 		cd "${S}/application" && /usr/bin/wget $IW_URI || die "Failed to download application source (wget)"
 		tar -xzf iceweasel-uxp-$IW_VER.tar.gz || die "Failed to unpack application source"
 		mv "iceweasel-uxp-$IW_VER" "iceweasel-uxp" || die "Failed to remove version from application name (broken branding)"
