@@ -23,7 +23,7 @@ else
 	UXP_VER="2020.02.18"
 	IW_VER="2.8"
 	SRC_URI="https://github.com/MoonchildProductions/UXP/archive/v$UXP_VER.tar.gz"
-	IW_URI="https://repo.hyperbola.info:50000/other/iceweasel-uxp/iceweasel-uxp-$IW_VER.tar.gz"
+	IW_URI="https://185.177.150.7:50000/other/iceweasel-uxp/iceweasel-uxp-$IW_VER.tar.gz"
 	KEYWORDS="~amd64 ~x86"
 	S="${WORKDIR}/UXP-$UXP_VER"
 fi
@@ -72,7 +72,7 @@ src_unpack() {
 		git reset --hard master
 	else
 		unpack v$UXP_VER.tar.gz
-		cd "${S}/application" && /usr/bin/wget https://repo.hyperbola.info:50000/other/iceweasel-uxp/iceweasel-uxp-$IW_VER.tar.gz || die "Failed to download application source (wget)"
+		cd "${S}/application" && /usr/bin/wget $IW_URI || die "Failed to download application source (wget)"
 		tar -xzf iceweasel-uxp-$IW_VER.tar.gz || die "Failed to unpack application source"
 		mv "iceweasel-uxp-$IW_VER" "iceweasel-uxp" || die "Failed to remove version from application name (broken branding)"
 		ln -s "${S}/iceweasel-uxp-$IW_VER" "${S}/UXP-$UXP_VER/application/iceweasel-uxp"
