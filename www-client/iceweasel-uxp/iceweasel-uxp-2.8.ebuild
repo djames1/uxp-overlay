@@ -31,7 +31,7 @@ fi
 DESCRIPTION="A new generation of Iceweasel, an XUL-based standalone web browser on the Unified XUL Platform (UXP)."
 HOMEPAGE="https://wiki.hyperbola.info/doku.php?id=en:project:iceweasel-uxp"
 
-KEYWORDS=""
+KEYWORDS="~amd64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
