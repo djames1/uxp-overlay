@@ -101,6 +101,8 @@ src_prepare() {
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
+	#Replace id with seamonkey id for addon compatibility
+	find ${S} -type f -exec sed -i -e 's/9184b6fe-4a5c-484d-8b4b-efbfccbfb514/92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a/g' {} \;
 }
 
 src_configure() {
