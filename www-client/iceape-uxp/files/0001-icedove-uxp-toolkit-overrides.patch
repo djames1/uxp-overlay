@@ -1,0 +1,42 @@
+From ec56f6f5b142e48d7a895c01c8d48eca2ba9914d Mon Sep 17 00:00:00 2001
+From: Gaming4JC <g4jc@bulletmail.org>
+Date: Sat, 11 Aug 2018 10:23:55 -0400
+Subject: [PATCH 1/1] icedove-uxp toolkit overrides
+
+---
+ mozilla/docshell/base/nsAboutRedirector.cpp     | 6 +-----
+ mozilla/dom/media/gtest/MockMediaDecoderOwner.h | 2 --
+ 2 files changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/mozilla/docshell/base/nsAboutRedirector.cpp b/mozilla/docshell/base/nsAboutRedirector.cpp
+index 4dba7f261..7bd80e9bb 100644
+--- a/mozilla/docshell/base/nsAboutRedirector.cpp
++++ b/mozilla/docshell/base/nsAboutRedirector.cpp
+@@ -51,11 +51,7 @@ static RedirEntry kRedirMap[] = {
+   },
+   { "config", "chrome://global/content/config.xul", 0 },
+   { "console", "chrome://global/content/console.xul", 0 },
+-  {
+-    "credits", "http://www.palemoon.org/Contributors.shtml",
+-    nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+-    nsIAboutModule::MAKE_LINKABLE
+-  },
++  { "credits", "chrome://global/content/aboutCredits.html", 0 },
+ #ifdef MOZ_DEVTOOLS
+   {
+     "debugging", "chrome://devtools/content/aboutdebugging/aboutdebugging.xhtml",
+diff --git a/mozilla/dom/media/gtest/MockMediaDecoderOwner.h b/mozilla/dom/media/gtest/MockMediaDecoderOwner.h
+index 324f18141..64d729018 100644
+--- a/mozilla/dom/media/gtest/MockMediaDecoderOwner.h
++++ b/mozilla/dom/media/gtest/MockMediaDecoderOwner.h
+@@ -34,8 +34,6 @@ public:
+   void DownloadProgressed() override {}
+   void UpdateReadyState() override {}
+   void FirstFrameLoaded() override {}
+-  void DispatchEncrypted(const nsTArray<uint8_t>& aInitData,
+-                         const nsAString& aInitDataType) override {}
+   bool IsActive() const override { return true; }
+   bool IsHidden() const override { return false; }
+   void DownloadSuspended() override {}
+-- 
+2.18.0

@@ -98,6 +98,12 @@ src_prepare() {
 
 	#Fix Seamonkey leftovers missing from iceape build
 	eapply $FILESDIR/0001-fix-package-manifest.patch
+	eapply $FILESDIR/0001-icedove-uxp-toolkit-overrides.patch
+	eapply $FILESDIR/0002-Disable-SSLKEYLOGFILE-in-NSS.patch
+	eapply $FILESDIR/0002-fix-lightning.patch
+	eapply $FILESDIR/0003-Hardcode-AppName-in-nsAppRunner.patch
+	eapply $FILESDIR/0004-Fix-PGO-Build.patch
+	eapply $FILESDIR/0007-gcc9_2_0-workaround.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user

@@ -1,0 +1,9 @@
+--- a/suite/installer/package-manifest.in	2020-02-22 12:00:57.915267588 -0500
++++ b/suite/installer/package-manifest.in	2020-02-23 17:51:25.878049572 -0500
+@@ -918,5 +918,5 @@
+ 
+ #ifdef MOZ_CALENDAR
+ [calendar]
+-@RESPATH@/extensions/{ee86d35c-86ba-44f3-bd9d-854163f8f07a}/
++@RESPATH@/extensions/{ee86d35c-86ba-44f3-bd9d-854163f8f07a}.xpi
+ #endif
