@@ -28,7 +28,7 @@ KEYWORDS="~amd64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+calendar hardened +privacy hwaccel jack pulseaudio selinux test system-icu system-zlib system-bz2 system-hunspell system-sqlite system-ffi system-pixman system-jpeg"
+IUSE="+calendar hardened +privacy hwaccel jack pulseaudio selinux test system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -101,8 +101,6 @@ src_prepare() {
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
-	#Replace id with seamonkey id for addon compatibility
-	find ${S} -type f -exec sed -i -e 's/9184b6fe-4a5c-484d-8b4b-efbfccbfb514/92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a/g' {} \;
 }
 
 src_configure() {

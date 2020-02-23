@@ -16,13 +16,3 @@
  #else
  @RESPATH@/extensions/inspector@mozilla.org/install.rdf
  @RESPATH@/extensions/inspector@mozilla.org/chrome.manifest
-@@ -915,8 +913,3 @@
- @RESPATH@/extensions/debugQA@mozilla.org/chrome/debugqa@JAREXT@
- #endif
- #endif
--
--#ifdef MOZ_CALENDAR
--[calendar]
--@RESPATH@/extensions/{ee86d35c-86ba-44f3-bd9d-854163f8f07a}/
--#endif
-
