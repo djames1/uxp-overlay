@@ -28,7 +28,7 @@ KEYWORDS="~amd64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+calendar hardened +privacy hwaccel jack pulseaudio selinux test system-icu system-zlib system-bz2 system-hunspell system-sqlite system-ffi system-pixman system-jpeg"
+IUSE="+calendar hardened +privacy hwaccel jack pulseaudio selinux test system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -98,11 +98,15 @@ src_prepare() {
 
 	#Fix Seamonkey leftovers missing from iceape build
 	eapply $FILESDIR/0001-fix-package-manifest.patch
+	eapply $FILESDIR/0001-icedove-uxp-toolkit-overrides.patch
+	eapply $FILESDIR/0002-Disable-SSLKEYLOGFILE-in-NSS.patch
+	eapply $FILESDIR/0002-fix-lightning.patch
+	eapply $FILESDIR/0003-Hardcode-AppName-in-nsAppRunner.patch
+	eapply $FILESDIR/0004-Fix-PGO-Build.patch
+	eapply $FILESDIR/0007-gcc9_2_0-workaround.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
-	#Replace id with seamonkey id for addon compatibility
-	find ${S} -type f -exec sed -i -e 's/9184b6fe-4a5c-484d-8b4b-efbfccbfb514/92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a/g' {} \;
 }
 
 src_configure() {

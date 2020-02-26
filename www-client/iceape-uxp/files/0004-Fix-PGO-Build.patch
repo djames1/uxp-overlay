@@ -4,14 +4,14 @@ Date: Mon, 22 Jul 2019 20:49:53 -0400
 Subject: [PATCH 1/1] Fix PGO Build
 
 ---
- Makefile.in            |  4 ++++
- gfx/thebes/gfxFont.cpp | 11 +++++++++++
+ mozilla/Makefile.in            |  4 ++++
+ mozilla/gfx/thebes/gfxFont.cpp | 11 +++++++++++
  2 files changed, 15 insertions(+)
 
-diff --git a/Makefile.in b/Makefile.in
+diff --git a/mozilla/Makefile.in b/mozilla/Makefile.in
 index 4adf3ac9a..ed7581a04 100644
---- a/Makefile.in
-+++ b/Makefile.in
+--- a/mozilla/Makefile.in
++++ b/mozilla/Makefile.in
 @@ -397,4 +397,8 @@ config/export:
  
  endif
@@ -21,10 +21,10 @@ index 4adf3ac9a..ed7581a04 100644
 +
 +pgo-profile-run:
 +	$(PYTHON) $(topsrcdir)/build/pgo/profileserver.py $(EXTRA_TEST_ARGS)
-diff --git a/gfx/thebes/gfxFont.cpp b/gfx/thebes/gfxFont.cpp
+diff --git a/mozilla/gfx/thebes/gfxFont.cpp b/mozilla/gfx/thebes/gfxFont.cpp
 index 490a866db..f2a61887b 100644
---- a/gfx/thebes/gfxFont.cpp
-+++ b/gfx/thebes/gfxFont.cpp
+--- a/mozilla/gfx/thebes/gfxFont.cpp
++++ b/mozilla/gfx/thebes/gfxFont.cpp
 @@ -2604,6 +2604,17 @@ gfxFont::GetShapedWord(DrawTarget *aDrawTarget,
      return sw;
  }
