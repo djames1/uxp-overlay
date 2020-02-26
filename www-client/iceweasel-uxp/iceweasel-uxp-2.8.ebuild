@@ -35,7 +35,7 @@ KEYWORDS="~amd64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="hardened +privacy hwaccel jack pulseaudio selinux test system-icu system-zlib system-bz2 system-hunspell system-sqlite system-ffi system-pixman system-jpeg"
+IUSE="hardened +privacy hwaccel jack pulseaudio selinux test system-icu system-zlib system-bz2 system-hunspell system-sqlite system-ffi system-pixman system-jpeg -webrtc"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -197,13 +197,25 @@ src_configure() {
 	echo "ac_add_options --disable-eme" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-updater" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-crashreporter" >> "${S}"/.mozconfig
+
 	if use privacy ; then
-	echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-webspeech" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-webspeechtestbackend" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
+	else
+    echo "ac_add_options --enable-webspeech" >> "${S}"/.mozconfig
+    echo "ac_add_options --enable-webspeechtestbackend" >> "${S}"/.mozconfig
+    echo "ac_add_options --enable-mozril-geoloc" >> "${S}"/.mozconfig
+    echo "ac_add_options --enable-nfc" >> "${S}"/.mozconfig
 	fi
+
+	if use webrtc; then
+		echo "ac_add_options --enable-webrtc" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
+	fi
+
 	echo "ac_add_options --disable-synth-pico" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-camera" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-ril" >> "${S}"/.mozconfig
