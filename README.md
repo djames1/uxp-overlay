@@ -11,10 +11,15 @@ www-client/iceape-uxp - Fork of Seamonkey with freedom respecting branding and a
 
 ## TODO
 Improve iceweasel-uxp ebuild - very poorly written at the moment
+
 Make a Basilisk ebuild based on the iceweasel-uxp ebuild
+
 Potentially create a binary package that pulls basilisk upstream binaries
+
 Determine if we can extract the pre-compiled binaries from Hyperbola Linux packages
+
 Create an icedove-uxp ebuild
+
 (Maybe) Create a New Moon ebuild with the option to compile with WebRTC 
 
 ## Credits
