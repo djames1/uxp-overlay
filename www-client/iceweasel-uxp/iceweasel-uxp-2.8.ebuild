@@ -22,8 +22,10 @@ if [[ ${PV} == 9999 ]]; then
 else
 	UXP_VER="2020.02.18"
 	IW_VER="2.8"
-	SRC_URI="https://github.com/MoonchildProductions/UXP/archive/v$UXP_VER.tar.gz"
-	IW_URI="https://185.177.150.7:50000/other/iceweasel-uxp/iceweasel-uxp-$IW_VER.tar.gz"
+	SRC_URI="
+		https://github.com/MoonchildProductions/UXP/archive/v$UXP_VER.tar.gz
+		https://repo.hyperbola.info:50000/other/iceweasel-uxp/iceweasel-uxp-$IW_VER.tar.gz
+	"
 	KEYWORDS="~amd64 ~x86"
 	S="${WORKDIR}/UXP-$UXP_VER"
 fi
@@ -35,7 +37,7 @@ KEYWORDS="~amd64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="hardened +privacy hwaccel jack pulseaudio selinux test system-icu system-zlib system-bz2 system-hunspell system-sqlite system-ffi system-pixman system-jpeg -webrtc"
+IUSE="hardened +privacy hwaccel jack pulseaudio selinux test +system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg +system-libevent +system-libvpx -webrtc"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -71,9 +73,7 @@ src_unpack() {
 		git reset --hard master
 	else
 		unpack v$UXP_VER.tar.gz
-		#This is supposed to wget the iceweasel-uxp archive, but for some reason when emerging wget would crash. Added iceweasel-uxp to files dir
-		cd "${S}/application" && cp $FILESDIR/iceweasel-uxp-$IW_VER.tar.gz . || die "Failed to download application source"
-		tar -xzf iceweasel-uxp-$IW_VER.tar.gz || die "Failed to unpack application source"
+		cd "${S}/application" && tar -xzf $DISTDIR/iceweasel-uxp-$IW_VER.tar.gz || die "Failed to unpack application source"
 		mv "iceweasel-uxp-$IW_VER" "iceweasel-uxp" || die "Failed to remove version from application name (broken branding)"
 		ln -s "${S}/iceweasel-uxp-$IW_VER" "${S}/UXP-$UXP_VER/application/iceweasel-uxp"
 		cd "${S}"
@@ -102,7 +102,12 @@ pkg_pretend() {
 
 src_prepare() {
 	# Apply our application specific patches to UXP source tree
-        eapply "${FILESDIR}"/0001-iceweasel-application-specific-overrides.patch
+		eapply "${FILESDIR}"/0001-iceweasel-application-specific-overrides.patch
+		eapply "${FILESDIR}"/0001-Update-libcubeb-to-a1200c34.patch
+		eapply "${FILESDIR}"/0002-Disable-SSLKEYLOGFILE-in-NSS.patch
+		eapply "${FILESDIR}"/0003-Hardcode-AppName-in-nsAppRunner.patch
+		eapply "${FILESDIR}"/0004-Uplift-enable-proxy-bypass-protection-flag.patch
+		eapply "${FILESDIR}"/0005-Fix-PGO-Build.patch
 		eapply "${FILESDIR}"/0007-gcc9_2_0-workaround.patch
 
 	# Drop -Wl,--as-needed related manipulation for ia64 as it causes ld sefgaults, bug #582432
@@ -228,10 +233,11 @@ src_configure() {
 	echo "ac_add_options --disable-official-branding" >> "${S}"/.mozconfig
 	echo "ac_add_options --enable-application=application/iceweasel-uxp" >> "${S}"/.mozconfig
 	echo "ac_add_options --with-branding=application/iceweasel-uxp/branding/iceweasel" >> "${S}"/.mozconfig
-	echo "export MOZILLA_OFFICIAL=1"
-	echo "export MOZ_TELEMETRY_REPORTING="
-	echo "export MOZ_ADDON_SIGNING="
-	echo "export MOZ_REQUIRE_SIGNING="
+	echo "ac_add_options --prefix='${EPREFIX}/usr'" >> "${S}"/.mozconfig
+	echo "export MOZILLA_OFFICIAL=0"
+	echo "export MOZ_TELEMETRY_REPORTING=0"
+	echo "export MOZ_ADDON_SIGNING=1"
+	echo "export MOZ_REQUIRE_SIGNING=0"
 
 	if [[ $(gcc-major-version) -lt 4 ]]; then
 		append-cxxflags -fno-stack-protector

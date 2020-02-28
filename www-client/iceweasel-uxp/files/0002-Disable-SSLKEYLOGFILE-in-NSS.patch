@@ -1,7 +1,4 @@
-From c76648060d0d4f90fdf94226ca43448c81dfd938 Mon Sep 17 00:00:00 2001
-From: Gaming4JC <g4jc@hyperbola.info>
-Date: Sun, 12 Jan 2020 17:11:36 -0500
-Subject: [PATCH 1/1] Disable SSLKEYLOGFILE in NSS
+Subject: Disable SSLKEYLOGFILE in NSS
 
 ---
  config/external/nss/Makefile.in | 2 +-
@@ -9,10 +6,10 @@ Subject: [PATCH 1/1] Disable SSLKEYLOGFILE in NSS
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/config/external/nss/Makefile.in b/config/external/nss/Makefile.in
-index 71954b403..1a9ae0719 100644
+index 861b7d07d..67066ee72 100644
 --- a/config/external/nss/Makefile.in
 +++ b/config/external/nss/Makefile.in
-@@ -231,7 +231,7 @@ DEFAULT_GMAKE_FLAGS += \
+@@ -230,7 +230,7 @@ DEFAULT_GMAKE_FLAGS += \
  endif
  
  DEFAULT_GMAKE_FLAGS += FREEBL_NO_DEPEND=0 $(FREEBL_LOWHASH_FLAG)
@@ -22,18 +19,18 @@ index 71954b403..1a9ae0719 100644
  ifdef MOZ_NO_WLZDEFS
  DEFAULT_GMAKE_FLAGS += ZDEFS_FLAG=
 diff --git a/security/nss/lib/ssl/ssl.gyp b/security/nss/lib/ssl/ssl.gyp
-index 3e1b5531a..ca75795ea 100644
+index 3694ab91a..d5e715209 100644
 --- a/security/nss/lib/ssl/ssl.gyp
 +++ b/security/nss/lib/ssl/ssl.gyp
-@@ -70,7 +70,7 @@
-             'UNSAFE_FUZZER_MODE',
-           ],
-         }],
--        [ 'enable_sslkeylogfile==1', {
-+        [ 'enable_sslkeylogfile==0', {
-           'defines': [
-             'NSS_ALLOW_SSLKEYLOGFILE',
-           ],
+@@ -88,7 +88,7 @@
+   ],
+   'target_defaults': {
+     'defines': [
+-      'NSS_ALLOW_SSLKEYLOGFILE=1'
++      'NSS_ALLOW_SSLKEYLOGFILE=0'
+     ]
+   },
+   'variables': {
 -- 
-2.24.1
+2.19.1
 
