@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=@NAME@
 Comment=Web Browser & Mail Suite
-Exec=/usr/local/bin/iceape-uxp %u
+Exec=/usr/bin/iceape-uxp %u
 Icon=@ICON@
 Terminal=false
 Type=Application
