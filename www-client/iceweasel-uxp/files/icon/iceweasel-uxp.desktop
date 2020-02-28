@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=@NAME@
 Comment=Web Browser
-Exec=/usr/local/bin/iceweasel-uxp %u
+Exec=/usr/bin/iceweasel-uxp %u
 Icon=@ICON@
 Terminal=false
 Type=Application
