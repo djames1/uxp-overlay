@@ -103,7 +103,6 @@ pkg_pretend() {
 src_prepare() {
 	# Apply our application specific patches to UXP source tree
 		eapply "${FILESDIR}"/0001-iceweasel-application-specific-overrides.patch
-		eapply "${FILESDIR}"/0001-Update-libcubeb-to-a1200c34.patch
 		eapply "${FILESDIR}"/0002-Disable-SSLKEYLOGFILE-in-NSS.patch
 		eapply "${FILESDIR}"/0003-Hardcode-AppName-in-nsAppRunner.patch
 		eapply "${FILESDIR}"/0004-Uplift-enable-proxy-bypass-protection-flag.patch
