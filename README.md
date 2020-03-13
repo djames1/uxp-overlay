@@ -24,6 +24,8 @@ To install this overlay, please run the following:
     - See above
 - Create an unbranded Pale Moon (New Moon) ebuild with compile flags not present in the official Pale Moon ebuild
     - I have no interest in this as I don't use Pale Moon, but I would accept a pull request for this.
+- Any Binary Outcast (Interlink Mail, Borealis Navigator) packages.
+    - Tobin expressly told me that I was not allowed to package these, so I will not package them.
 
 ## Credits
 Initial iceweasel-uxp package taken from https://github.com/g4jc/iceweasel-uxp-overlay

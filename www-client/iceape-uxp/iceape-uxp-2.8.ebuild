@@ -24,7 +24,8 @@ S="${WORKDIR}/icedove-uxp-$ID_VER"
 DESCRIPTION="Mail and browser suite forked from Seamonkey and built on the the Unified XUL Platform."
 HOMEPAGE="https://wiki.hyperbola.info/doku.php?id=en:project:iceape-uxp"
 
-KEYWORDS="~amd64"
+#Compiled on ppc64le
+KEYWORDS="~amd64 ~ppc64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
