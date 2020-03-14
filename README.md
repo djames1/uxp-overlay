@@ -13,19 +13,15 @@ To install this overlay, please run the following:
         - This has a different GUID than SeaMonkey so most addons will not work without, at minimum, adding the GUID to `install.rdf` in the downloaded addon .xpi file
 
 ## TODO
-- Improve Iceweasel-UXP and Iceape-UXP ebuilds - both are missing some options, such as the ability to choose between GTK2 or GTK3
-- Determine if we can extract the pre-compiled binaries from Hyperbola Linux packages in order to create bin packages
 - Create an Icedove-UXP ebuild - this is low priority as I don't use Icedove-UXP
 
 ## WON'T DO
 - Basilisk ebuild
-    - This won't happen as Basilisk has a restrictive branding policy and we already have Iceweasel-UXP
-- basilisk-bin ebuild
-    - See above
-- Create an unbranded Pale Moon (New Moon) ebuild with compile flags not present in the official Pale Moon ebuild
-    - I have no interest in this as I don't use Pale Moon, but I would accept a pull request for this.
-- Any Binary Outcast (Interlink Mail, Borealis Navigator) packages.
-    - Tobin expressly told me that I was not allowed to package these, so I will not package them.
+    - Reason: I do not have permission to create branded ebuilds. I see no reason to use an unbranded Basilisk when Iceweasel-UXP exists.
+- Pale Moon ebuild
+    - Reason: Pale Moon ebuilds that are allowed to use the official branding already exist [here](https://github.com/deu/palemoon-overlay).
+- Branded Binary Outcast (Interlink Mail, Borealis Navigator) ebuilds.
+    - Reason: I asked Tobin and he told me that I was not allowed to package these. Per his instructions I will not package them.
 
 ## Credits
 Initial iceweasel-uxp package taken from https://github.com/g4jc/iceweasel-uxp-overlay
