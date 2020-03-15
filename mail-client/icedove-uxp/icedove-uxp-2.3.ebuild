@@ -22,7 +22,7 @@ S="${WORKDIR}/icedove-uxp"
 DESCRIPTION="A new generation of Iceape, an XUL-based mail client built on the Unified XUL Platform (UXP)."
 HOMEPAGE="https://wiki.hyperbola.info/doku.php?id=en:project:icedove-uxp"
 
-KEYWORDS=""
+KEYWORDS="~x86 ~amd64 ~ppc64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
