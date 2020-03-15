@@ -109,16 +109,6 @@ src_prepare() {
 		eapply "${FILESDIR}"/0005-Fix-PGO-Build.patch
 		eapply "${FILESDIR}"/0007-gcc9_2_0-workaround.patch
 
-	# Drop -Wl,--as-needed related manipulation for ia64 as it causes ld sefgaults, bug #582432
-	if use ia64 ; then
-		sed -i \
-		-e '/^OS_LIBS += no_as_needed/d' \
-		-e '/^OS_LIBS += as_needed/d' \
-		"${S}"/widget/gtk/mozgtk/gtk2/moz.build \
-		"${S}"/widget/gtk/mozgtk/gtk3/moz.build \
-		|| die "sed failed to drop --as-needed for ia64"
-	fi
-
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
 }
@@ -144,47 +134,47 @@ src_configure() {
 	echo "mk_add_options XARGS=/usr/bin/xargs" >> "${S}"/.mozconfig
 
 	if use jack ; then
-	echo "ac_add_options --enable-jack" >> "${S}"/.mozconfig
+		echo "ac_add_options --enable-jack" >> "${S}"/.mozconfig
 	fi
 
-        if use pulseaudio ; then
-	echo "ac_add_options --enable-pulseaudio" >> "${S}"/.mozconfig
+	if use pulseaudio ; then
+		echo "ac_add_options --enable-pulseaudio" >> "${S}"/.mozconfig
 	else
         echo "ac_add_options --disable-pulseaudio" >> "${S}"/.mozconfig
-        fi
+    fi
 
 	if use system-sqlite ; then
         echo "WARNING: Building with System SQLite is strongly discouraged and will likely break. See UXP bug #265"
         echo "ac_add_options --enable-system-sqlite" >> "${S}"/.mozconfig
-        fi
+    fi
 
 	if use system-icu ; then
         echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
-        fi
+    fi
 
 	if use system-zlib ; then
         echo "ac_add_options --with-system-zlib" >> "${S}"/.mozconfig
-        fi
+    fi
 
 	if use system-bz2 ; then
         echo "ac_add_options --with-system-bz2" >> "${S}"/.mozconfig
-        fi
+    fi
 
-        if use system-hunspell ; then
-        echo "ac_add_options --enable-system-hunspell" >> "${S}"/.mozconfig
-        fi
+	if use system-hunspell ; then
+		echo "ac_add_options --enable-system-hunspell" >> "${S}"/.mozconfig
+    fi
 
-        if use system-ffi ; then
+	if use system-ffi ; then
         echo "ac_add_options --enable-system-ffi" >> "${S}"/.mozconfig
-        fi
+    fi
 
-        if use system-pixman ; then
+	if use system-pixman ; then
         echo "ac_add_options --enable-system-pixman" >> "${S}"/.mozconfig
-        fi
+    fi
 
 	if use system-jpeg ; then
         echo "ac_add_options --with-system-jpeg" >> "${S}"/.mozconfig
-        fi
+    fi
 
 	if use system-libvpx ; then
 	echo "ac_add_options --with-system-libvpx" >> "${S}"/.mozconfig
@@ -244,14 +234,12 @@ src_configure() {
 
 	# workaround for funky/broken upstream configure...
 	SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-	emake -f client.mk configure
+	./mach configure
 }
 
 src_compile() {
-		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-		#./mach build
-		emake -f client.mk realbuild
-
+	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
+	./mach build
 }
 
 src_install() {
@@ -261,8 +249,7 @@ src_install() {
 	pax-mark m "${BUILD_OBJ_DIR}"/dist/bin/xpcshell
 
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-	emake DESTDIR="${D}" INSTALL_SDK= install
-
+	DESTDIR="${D}" ${S}/mach install
 	# Install language packs
 	# mozlinguas_src_install
 
