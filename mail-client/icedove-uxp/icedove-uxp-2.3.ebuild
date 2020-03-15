@@ -19,7 +19,7 @@ SRC_URI="
 KEYWORDS="~amd64 ~x86 ~ppc64"
 S="${WORKDIR}/icedove-uxp"
 
-DESCRIPTION="Icedove-UXP-git a trademark free UXP application"
+DESCRIPTION="A new generation of Iceape, an XUL-based mail client built on the Unified XUL Platform (UXP)."
 HOMEPAGE="https://wiki.hyperbola.info/doku.php?id=en:project:icedove-uxp"
 
 KEYWORDS=""
