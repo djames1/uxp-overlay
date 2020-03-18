@@ -29,7 +29,7 @@ KEYWORDS="~amd64 ~ppc64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+calendar hardened +privacy hwaccel jack pulseaudio selinux test system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg"
+IUSE="+calendar hardened +privacy hwaccel jack pgo pulseaudio selinux test system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -37,6 +37,7 @@ ASM_DEPEND=">=dev-lang/yasm-1.1"
 RDEPEND="
 	dev-util/pkgconfig
 	jack? ( virtual/jack )
+    pgo? ( >=sys-devel/gcc-4.5 )
 	system-icu? ( dev-libs/icu )
 	system-zlib? ( sys-libs/zlib )
 	system-bz2? ( app-arch/bzip2 )
@@ -78,26 +79,25 @@ pkg_setup() {
 		XDG_SESSION_COOKIE \
 		XAUTHORITY
 
+	if use pgo; then
+		einfo
+		ewarn "You will do a double build for profile guided optimization."
+		ewarn "This will result in your build taking at least twice as long as before."
+	fi
 }
 
 pkg_pretend() {
 	# Ensure we have enough disk space to compile
+	if use pgo || use debug || use test ; then
+		CHECKREQS_DISK_BUILD="8G"
+	else
 		CHECKREQS_DISK_BUILD="4G"
-	check-reqs_pkg_setup
+	fi
+    check-reqs_pkg_setup
 }
 
 src_prepare() {
-	# Drop -Wl,--as-needed related manipulation for ia64 as it causes ld sefgaults, bug #582432
-	if use ia64 ; then
-		sed -i \
-		-e '/^OS_LIBS += no_as_needed/d' \
-		-e '/^OS_LIBS += as_needed/d' \
-		"${S}"/mozilla/widget/gtk/mozgtk/gtk2/moz.build \
-		"${S}"/mozilla/widget/gtk/mozgtk/gtk3/moz.build \
-		|| die "sed failed to drop --as-needed for ia64"
-	fi
-
-	#Fix Seamonkey leftovers missing from iceape build
+	#Apply patches from Hyperbola package
 	eapply $FILESDIR/0001-fix-package-manifest.patch
 	eapply $FILESDIR/0001-icedove-uxp-toolkit-overrides.patch
 	eapply $FILESDIR/0002-Disable-SSLKEYLOGFILE-in-NSS.patch
@@ -221,20 +221,48 @@ src_configure() {
 	echo "ac_add_options --enable-calendar" >> "${S}"/.mozconfig
 	fi
 
+	# Allow for a proper pgo build
+	if use pgo; then
+		echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> "${S}"/.mozconfig
+	fi
+
 	if [[ $(gcc-major-version) -lt 4 ]]; then
 		append-cxxflags -fno-stack-protector
 	fi
 
 	# workaround for funky/broken upstream configure...
 	SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-	#emake -f mozilla/client.mk configure
 	mozilla/mach configure
 }
 
 src_compile() {
-		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-		mozilla/mach build
+	if use pgo; then
+		addpredict /root
+		addpredict /etc/gconf
+		# Reset and cleanup environment variables used by GNOME/XDG
+		gnome2_environment_reset
 
+		# Firefox tries to use dri stuff when it's run, see bug 380283
+		shopt -s nullglob
+		cards=$(echo -n /dev/dri/card* | sed 's/ /:/g')
+		if test -z "${cards}"; then
+			cards=$(echo -n /dev/ati/card* /dev/nvidiactl* | sed 's/ /:/g')
+			if test -n "${cards}"; then
+				# Binary drivers seem to cause access violations anyway, so
+				# let's use indirect rendering so that the device files aren't
+				# touched at all. See bug 394715.
+				export LIBGL_ALWAYS_INDIRECT=1
+			fi
+		fi
+		shopt -u nullglob
+		[[ -n "${cards}" ]] && addpredict "${cards}"
+
+		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
+        ./mozilla/mach build
+	else
+		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
+		./mozilla/mach build
+	fi
 }
 
 src_install() {
