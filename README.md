@@ -15,6 +15,8 @@ To install this overlay, please run the following:
         - This has a different GUID than SeaMonkey so most addons will not work
           without, at minimum, adding the GUID to `install.rdf` in the
           downloaded addon .xpi file
+- www-client/bluegorilla
+    - My fork of Iceape-UXP
 - mail-client/icedove-uxp
     - Fork of Thunderbird 52 with open source branding and additional privacy
       flags at compilation
