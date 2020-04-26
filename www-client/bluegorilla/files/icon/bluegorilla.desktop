@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=@NAME@
 Comment=Web Browser & Mail Suite
-Exec=/usr/bin/bluegorlla %u
+Exec=/usr/bin/bluegorilla %u
 Icon=@ICON@
 Terminal=false
 Type=Application
