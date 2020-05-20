@@ -214,6 +214,11 @@ src_configure() {
 		append-cxxflags -fno-stack-protector
 	fi
 
+    # Disable jemalloc on musl
+	if use elibc_musl; then
+        echo "ac_add_options --disable-jemalloc" >> "${S}"/.mozconfig
+    fi
+
 	# workaround for funky/broken upstream configure...
 	SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
 	mozilla/mach configure
