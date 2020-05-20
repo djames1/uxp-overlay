@@ -36,6 +36,7 @@ ASM_DEPEND=">=dev-lang/yasm-1.1"
 
 RDEPEND="
 	dev-util/pkgconfig
+	gnome-base/gconf
 	jack? ( virtual/jack )
     pgo? ( >=sys-devel/gcc-4.5 )
 	system-icu? ( dev-libs/icu )
