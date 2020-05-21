@@ -93,7 +93,9 @@ pkg_pretend() {
 }
 
 src_prepare() {
-	# Allow user to apply any additional patches without modifing ebuild
+    eapply $FILESDIR/0007-gcc9_2_0-workaround.patch
+
+    # Allow user to apply any additional patches without modifing ebuild
 	eapply_user
 }
 
