@@ -137,6 +137,7 @@ src_configure() {
 
     if use disable-startupcache ; then
         echo "ac_add_options --disable-startupcache" >> "${S}"/.mozconfig
+		echo "ac_add_options --disable-precompiled-startupcache" >> "${S}"/.mozconfig
     fi
 
 
