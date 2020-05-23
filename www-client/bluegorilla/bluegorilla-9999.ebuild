@@ -27,7 +27,7 @@ HOMEPAGE="https://github.com/djames1/BlueGorilla"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+calendar hardened hwaccel jack pgo +privacy pulseaudio selinux test system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg"
+IUSE="+calendar hardened hwaccel jack pgo +privacy pulseaudio selinux -disable-startupcache test system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -134,6 +134,11 @@ src_configure() {
         echo "WARNING: Building with System SQLite is strongly discouraged and will likely break. See UXP bug #265"
         echo "ac_add_options --enable-system-sqlite" >> "${S}"/.mozconfig
     fi
+
+    if use disable-startupcache ; then
+        echo "ac_add_options --disable-startupcache" >> "${S}"/.mozconfig
+    fi
+
 
 	if use system-icu ; then
         echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
