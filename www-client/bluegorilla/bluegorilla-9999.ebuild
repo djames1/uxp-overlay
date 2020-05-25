@@ -229,7 +229,7 @@ src_configure() {
 
 	# workaround for funky/broken upstream configure...
 	SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-	mozilla/mach configure
+	mozilla/mach configure || die
 }
 
 src_compile() {
@@ -255,10 +255,10 @@ src_compile() {
 		[[ -n "${cards}" ]] && addpredict "${cards}"
 
 		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-        ./mozilla/mach build
+        ./mozilla/mach build || die
 	else
 		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-		./mozilla/mach build
+		./mozilla/mach build || die
 	fi
 }
 
@@ -270,7 +270,7 @@ src_install() {
 
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
 	#emake DESTDIR="${D}" INSTALL_SDK= install
-	DESTDIR="${D}" ${S}/mozilla/mach install
+	DESTDIR="${D}" ${S}/mozilla/mach install || die
 
 	# Install language packs
 	# mozlinguas_src_install
