@@ -20,10 +20,10 @@ if [[ ${PV} == 9999 ]]; then
 	KEYWORDS=""
 	S="${WORKDIR}/${P}"
 else
-	UXP_VER="2020.02.18"
-	IW_VER="2.8"
+	UXP_VER="RELBASE_20200603"
+	IW_VER="2.9"
 	SRC_URI="
-		https://github.com/MoonchildProductions/UXP/archive/v$UXP_VER.tar.gz
+		https://github.com/MoonchildProductions/UXP/archive/$UXP_VER.tar.gz -> UXP-$UXP_VER.tar.gz
 		https://repo.hyperbola.info:50000/other/iceweasel-uxp/iceweasel-uxp-$IW_VER.tar.gz
 	"
 	KEYWORDS="~amd64 ~x86"
@@ -37,7 +37,7 @@ KEYWORDS="~amd64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="hardened +privacy hwaccel jack pgo pulseaudio selinux test +system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg -system-libevent +system-libvpx -webrtc"
+IUSE="hardened +privacy hwaccel jack pulseaudio selinux test +system-icu +system-zlib +system-bz2 +system-hunspell -system-sqlite +system-ffi +system-pixman +system-jpeg +system-libevent +system-libvpx -webrtc"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -58,7 +58,6 @@ RDEPEND="
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
-    pgo? ( >=sys-devel/gcc-4.5 )
 	amd64? ( ${ASM_DEPEND} virtual/opengl )
 	x86? ( ${ASM_DEPEND} virtual/opengl )"
 
@@ -73,7 +72,8 @@ src_unpack() {
 		cd "${S}/application" && git clone $IW_REPO_URI || die "Failed to download application source (git)"
 		git reset --hard master
 	else
-		unpack v$UXP_VER.tar.gz
+		unpack UXP-$UXP_VER.tar.gz || die
+		mkdir ${S}/application || die
 		cd "${S}/application" && tar -xzf $DISTDIR/iceweasel-uxp-$IW_VER.tar.gz || die "Failed to unpack application source"
 		mv "iceweasel-uxp-$IW_VER" "iceweasel-uxp" || die "Failed to remove version from application name (broken branding)"
 		ln -s "${S}/iceweasel-uxp-$IW_VER" "${S}/UXP-$UXP_VER/application/iceweasel-uxp"
@@ -92,32 +92,23 @@ pkg_setup() {
 		SESSION_MANAGER \
 		XDG_SESSION_COOKIE \
 		XAUTHORITY
-
-	if use pgo; then
-		einfo
-		ewarn "You will do a double build for profile guided optimization."
-		ewarn "This will result in your build taking at least twice as long as before."
-	fi
 }
 
 pkg_pretend() {
 	# Ensure we have enough disk space to compile
-	if use pgo || use debug || use test ; then
-		CHECKREQS_DISK_BUILD="8G"
-	else
-		CHECKREQS_DISK_BUILD="4G"
-	fi
+	CHECKREQS_DISK_BUILD="4G"
     check-reqs_pkg_setup
 }
 
 src_prepare() {
 	# Apply our application specific patches to UXP source tree
-		eapply "${FILESDIR}"/2.8/0001-iceweasel-application-specific-overrides.patch
-		eapply "${FILESDIR}"/2.8/0002-Disable-SSLKEYLOGFILE-in-NSS.patch
-		eapply "${FILESDIR}"/2.8/0003-Hardcode-AppName-in-nsAppRunner.patch
-		eapply "${FILESDIR}"/2.8/0004-Uplift-enable-proxy-bypass-protection-flag.patch
-		eapply "${FILESDIR}"/2.8/0005-Fix-PGO-Build.patch
-		eapply "${FILESDIR}"/2.8/0007-gcc9_2_0-workaround.patch
+		eapply "${FILESDIR}"/0001-Restore-risky-system-libraries.patch
+		eapply "${FILESDIR}"/0002-Add-iceweasel-uxp-application-specfic-override.patch
+		eapply "${FILESDIR}"/0003-Uplift-enable-proxy-bypass-protection-flag.patch
+		eapply "${FILESDIR}"/0004-Hardcode-AppName-in-nsAppRunner.patch
+		eapply "${FILESDIR}"/0005-Disable-SSLKEYLOGFILE-in-NSS.patch
+		eapply "${FILESDIR}"/0007-init-configure-patch.patch
+		eapply "${FILESDIR}"/iceweasel-uxp-install-dir.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
@@ -187,11 +178,13 @@ src_configure() {
     fi
 
 	if use system-libvpx ; then
-	echo "ac_add_options --with-system-libvpx" >> "${S}"/.mozconfig
+	    echo "ac_add_options --with-system-libvpx" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --without-system-libvpx" >> "${S}"/.mozconfig
 	fi
 
 	if use system-libevent ; then
-	echo "ac_add_options --with-system-libevent" >> "${S}"/.mozconfig
+		echo "ac_add_options --with-system-libevent" >> "${S}"/.mozconfig
 	fi
 
 	# Favor Privacy over features at compile time
@@ -203,8 +196,8 @@ src_configure() {
 	echo "ac_add_options --disable-crashreporter" >> "${S}"/.mozconfig
 
 	if use privacy ; then
-	echo "ac_add_options --disable-webspeech" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-webspeechtestbackend" >> "${S}"/.mozconfig
+	#echo "ac_add_options --disable-webspeech" >> "${S}"/.mozconfig
+	#echo "ac_add_options --disable-webspeechtestbackend" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
 	else
@@ -238,48 +231,18 @@ src_configure() {
 	echo "export MOZ_ADDON_SIGNING=1"
 	echo "export MOZ_REQUIRE_SIGNING=0"
 
-    # Allow for a proper pgo build
-	if use pgo; then
-		echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> "${S}"/.mozconfig
-	fi
-
     if [[ $(gcc-major-version) -lt 4 ]]; then
 		append-cxxflags -fno-stack-protector
 	fi
 
 	# workaround for funky/broken upstream configure...
 	SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-	./mach configure
+	./mach configure || die "Failed to configure"
 }
 
 src_compile() {
-    if use pgo; then
-		addpredict /root
-		addpredict /etc/gconf
-		# Reset and cleanup environment variables used by GNOME/XDG
-		gnome2_environment_reset
-
-		# Firefox tries to use dri stuff when it's run, see bug 380283
-		shopt -s nullglob
-		cards=$(echo -n /dev/dri/card* | sed 's/ /:/g')
-		if test -z "${cards}"; then
-			cards=$(echo -n /dev/ati/card* /dev/nvidiactl* | sed 's/ /:/g')
-			if test -n "${cards}"; then
-				# Binary drivers seem to cause access violations anyway, so
-				# let's use indirect rendering so that the device files aren't
-				# touched at all. See bug 394715.
-				export LIBGL_ALWAYS_INDIRECT=1
-			fi
-		fi
-		shopt -u nullglob
-		[[ -n "${cards}" ]] && addpredict "${cards}"
-
-		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-        ./mach build
-	else
-		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-		./mach build
-	fi
+	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
+	./mach build || die "Failed to build"
 }
 
 src_install() {
@@ -289,7 +252,7 @@ src_install() {
 	pax-mark m "${BUILD_OBJ_DIR}"/dist/bin/xpcshell
 
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-	DESTDIR="${D}" ${S}/mach install
+	DESTDIR="${D}" ${S}/mach install || die "Failed to install"
 	# Install language packs
 	# mozlinguas_src_install
 
