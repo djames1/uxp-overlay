@@ -6,8 +6,8 @@ index d6c2a426b..c926a0c98 100644
      # starting with version 7.1, see Mozilla bug 1363009.
      CXXFLAGS += ['-Wno-shadow', '-Werror=format', '-fno-strict-aliasing']
 
-+    # GCC 9.2.0 doesn't like this so don't error on it
-+    if CONFIG['CC_VERSION'] == '9.2.0':
++    # Hardened GCC doesn't like this so don't error on it
++    if CONFIG['GNU_CXX']:
 +        CXXFLAGS += ['-Wno-error=format-overflow']
 +
  # Suppress warnings in third-party code.
