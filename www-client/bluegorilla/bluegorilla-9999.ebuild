@@ -186,8 +186,8 @@ src_configure() {
 	echo "ac_add_options --disable-crashreporter" >> "${S}"/.mozconfig
 	if use privacy ; then
 	echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-webspeech" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-webspeechtestbackend" >> "${S}"/.mozconfig
+	#echo "ac_add_options --disable-webspeech" >> "${S}"/.mozconfig
+	#echo "ac_add_options --disable-webspeechtestbackend" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
 	fi
