@@ -109,6 +109,7 @@ src_prepare() {
 		eapply "${FILESDIR}"/0005-Disable-SSLKEYLOGFILE-in-NSS.patch
 		eapply "${FILESDIR}"/0007-init-configure-patch.patch
 		eapply "${FILESDIR}"/iceweasel-uxp-install-dir.patch
+		eapply "${FILESDIR}"/0001-gcc-hardened-workaround.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
