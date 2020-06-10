@@ -20,22 +20,17 @@ To install this overlay, please run the following:
 - mail-client/icedove-uxp
     - Fork of Thunderbird 52 with open source branding and additional privacy
       flags at compilation
-
-## TODO
-- Package unbranded versions of Binary Outcast applications
-    - These will be unofficial packages. Do not submit bugs to upstream unless
-      using the official pre-compiled binaries.
+- www-client/serpent
+    - Unbranded Basilisk ebuild (Serpent browser)
 
 ## WON'T DO
-- Basilisk ebuild
-    - Reason: I do not have permission to create branded ebuilds. I see no
-      reason to use an unbranded Basilisk when Iceweasel-UXP exists.
+- Branded Basilisk ebuild
+    - Reason: Retarded branding policies.
 - Pale Moon ebuild
     - Reason: Pale Moon ebuilds that are allowed to use the official branding
       already exist [here](https://github.com/deu/palemoon-overlay).
 - Branded Binary Outcast (Interlink Mail, Borealis Navigator) ebuilds.
-    - Reason: I asked Tobin and he told me that I was not allowed to package
-      these. Per his instructions I will not package them.
+    - Reason: Retarded EULA
 
 ## Credits
 Initial iceweasel-uxp package taken from https://github.com/g4jc/iceweasel-uxp-overlay
