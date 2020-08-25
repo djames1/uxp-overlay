@@ -10,34 +10,22 @@ MOZCONFIG_OPTIONAL_WIFI=0
 
 inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.52 pax-utils xdg-utils autotools
 
-if [[ ${PV} == 9999 ]]; then
-	inherit git-r3
-	EGIT_REPO_URI="https://github.com/MoonchildProductions/UXP"
-	IW_REPO_URI="https://git.hyperbola.info:50100/software/iceweasel-uxp.git"
-	EGIT_CHECKOUT_DIR="${WORKDIR}/${P}"
-	EGIT_BRANCH="master"
-	SRC_URI=""
-	KEYWORDS=""
-	S="${WORKDIR}/${P}"
-else
-	UXP_VER="RELBASE_20200603"
-	IW_VER="2.9"
+	UXP_VER="RELBASE_20200730"
+	BAS_VER="${PV}"
 	SRC_URI="
 		https://github.com/MoonchildProductions/UXP/archive/$UXP_VER.tar.gz -> UXP-$UXP_VER.tar.gz
-		https://repo.hyperbola.info:50000/other/iceweasel-uxp/iceweasel-uxp-$IW_VER.tar.gz
+		https://github.com/MoonchildProductions/Basilisk/archive/v$BAS_VER.tar.gz -> basilisk-$BAS_VER.tar.gz
 	"
-	KEYWORDS="~amd64 ~x86"
-	S="${WORKDIR}/UXP-$UXP_VER"
-fi
+	S="${WORKDIR}/Basilisk-$BAS_VER"
 
-DESCRIPTION="A new generation of Iceweasel, an XUL-based standalone web browser on the Unified XUL Platform (UXP)."
-HOMEPAGE="https://wiki.hyperbola.info/doku.php?id=en:project:iceweasel-uxp"
+DESCRIPTION="A XUL-based web-browser demonstrating the Unified XUL Platform (UXP)."
+HOMEPAGE="http://www.basilisk-browser.org/"
 
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~ppc64"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="hardened +privacy hwaccel jack pulseaudio selinux test +system-icu +system-zlib +system-bz2 +system-hunspell -system-sqlite +system-ffi +system-pixman +system-jpeg +system-libevent +system-libvpx -webrtc"
+IUSE="+eme-free hardened +privacy hwaccel jack pulseaudio selinux test +system-zlib +system-bz2 +system-hunspell -system-sqlite +system-ffi +system-pixman +system-jpeg -system-libevent +webrtc"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -45,7 +33,6 @@ ASM_DEPEND=">=dev-lang/yasm-1.1"
 RDEPEND="
 	dev-util/pkgconfig
 	jack? ( virtual/jack )
-	system-icu? ( dev-libs/icu )
 	system-zlib? ( sys-libs/zlib )
 	system-bz2? ( app-arch/bzip2 )
 	system-hunspell? ( app-text/hunspell )
@@ -54,31 +41,20 @@ RDEPEND="
 	system-pixman? ( x11-libs/pixman )
 	system-jpeg? ( media-libs/libjpeg-turbo )
 	system-libevent? ( dev-libs/libevent )
-	system-libvpx? ( media-libs/libvpx )
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
 	amd64? ( ${ASM_DEPEND} virtual/opengl )
 	x86? ( ${ASM_DEPEND} virtual/opengl )"
 
-QA_PRESTRIPPED="usr/lib*/${PN}/iceweasel-uxp"
+QA_PRESTRIPPED="usr/lib*/${PN}/serpent"
 
 BUILD_OBJ_DIR="${S}/ff"
 
 src_unpack() {
-	if [[ ${PV} == "9999" ]]; then
-		git-r3_fetch
-		git-r3_checkout
-		cd "${S}/application" && git clone $IW_REPO_URI || die "Failed to download application source (git)"
-		git reset --hard master
-	else
-		unpack UXP-$UXP_VER.tar.gz || die
-		mkdir ${S}/application || die
-		cd "${S}/application" && tar -xzf $DISTDIR/iceweasel-uxp-$IW_VER.tar.gz || die "Failed to unpack application source"
-		mv "iceweasel-uxp-$IW_VER" "iceweasel-uxp" || die "Failed to remove version from application name (broken branding)"
-		ln -s "${S}/iceweasel-uxp-$IW_VER" "${S}/UXP-$UXP_VER/application/iceweasel-uxp"
-		cd "${S}"
-	fi
+		unpack basilisk-$BAS_VER.tar.gz || die
+		unpack UXP-$UXP_VER.tar.gz || die "Failed to unpack application source"
+		cd "${S}" && rm -rf platform && mv ../UXP-$UXP_VER ./platform || die "Failed to unpack application source"
 }
 
 pkg_setup() {
@@ -102,14 +78,7 @@ pkg_pretend() {
 
 src_prepare() {
 	# Apply our application specific patches to UXP source tree
-		eapply "${FILESDIR}"/0001-Restore-risky-system-libraries.patch
-		eapply "${FILESDIR}"/0002-Add-iceweasel-uxp-application-specfic-override.patch
-		eapply "${FILESDIR}"/0003-Uplift-enable-proxy-bypass-protection-flag.patch
-		eapply "${FILESDIR}"/0004-Hardcode-AppName-in-nsAppRunner.patch
-		eapply "${FILESDIR}"/0005-Disable-SSLKEYLOGFILE-in-NSS.patch
-		eapply "${FILESDIR}"/0007-init-configure-patch.patch
-		eapply "${FILESDIR}"/iceweasel-uxp-install-dir.patch
-		eapply "${FILESDIR}"/0001-gcc-hardened-workaround.patch
+	eapply "${FILESDIR}"/0001-gcc-hardened-workaround.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
@@ -123,9 +92,6 @@ src_configure() {
 	# mozconfig, CFLAGS and CXXFLAGS setup
 	#
 	####################################
-
-	# It doesn't compile on alpha without this LDFLAGS
-	use alpha && append-ldflags "-Wl,--no-relax"
 
 	# Add full relro support for hardened
 	use hardened && append-ldflags "-Wl,-z,relro,-z,now"
@@ -148,10 +114,6 @@ src_configure() {
 	if use system-sqlite ; then
         echo "WARNING: Building with System SQLite is strongly discouraged and will likely break. See UXP bug #265"
         echo "ac_add_options --enable-system-sqlite" >> "${S}"/.mozconfig
-    fi
-
-	if use system-icu ; then
-        echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
     fi
 
 	if use system-zlib ; then
@@ -178,34 +140,30 @@ src_configure() {
         echo "ac_add_options --with-system-jpeg" >> "${S}"/.mozconfig
     fi
 
-	if use system-libvpx ; then
-	    echo "ac_add_options --with-system-libvpx" >> "${S}"/.mozconfig
-	else
-		echo "ac_add_options --without-system-libvpx" >> "${S}"/.mozconfig
-	fi
-
 	if use system-libevent ; then
 		echo "ac_add_options --with-system-libevent" >> "${S}"/.mozconfig
 	fi
 
-	# Favor Privacy over features at compile time
-	echo "ac_add_options --disable-userinfo" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-safe-browsing" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-url-classifier" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-eme" >> "${S}"/.mozconfig
+	if use eme-free; then
+		echo "ac_add_options --disable-eme" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --enable-eme" >> "${S}"/.mozconfig
+	fi
+
+	# Disable unneeded stuff
 	echo "ac_add_options --disable-updater" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-crashreporter" >> "${S}"/.mozconfig
 
-	if use privacy ; then
-	#echo "ac_add_options --disable-webspeech" >> "${S}"/.mozconfig
-	#echo "ac_add_options --disable-webspeechtestbackend" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
+	# Favor Privacy over features at compile time
+	if use privacy; then
+		echo "ac_add_options --disable-userinfo" >> "${S}"/.mozconfig
+		echo "ac_add_options --disable-safe-browsing" >> "${S}"/.mozconfig
+		echo "ac_add_options --disable-url-classifier" >> "${S}"/.mozconfig
+		echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
+		echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
 	else
-    echo "ac_add_options --enable-webspeech" >> "${S}"/.mozconfig
-    echo "ac_add_options --enable-webspeechtestbackend" >> "${S}"/.mozconfig
-    echo "ac_add_options --enable-mozril-geoloc" >> "${S}"/.mozconfig
-    echo "ac_add_options --enable-nfc" >> "${S}"/.mozconfig
+		echo "ac_add_options --enable-mozril-geoloc" >> "${S}"/.mozconfig
+		echo "ac_add_options --enable-nfc" >> "${S}"/.mozconfig
 	fi
 
 	if use webrtc; then
@@ -214,6 +172,7 @@ src_configure() {
 		echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
 	fi
 
+	# TODO: separate some of these into their own use flags
 	echo "ac_add_options --disable-synth-pico" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-camera" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-ril" >> "${S}"/.mozconfig
@@ -222,19 +181,14 @@ src_configure() {
 	echo "ac_add_options --disable-tests" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-maintenance-service" >> "${S}"/.mozconfig
 
-	#Build the iceweasel-uxp application with iceweasel branding
-	echo "ac_add_options --disable-official-branding" >> "${S}"/.mozconfig
-	echo "ac_add_options --enable-application=application/iceweasel-uxp" >> "${S}"/.mozconfig
-	echo "ac_add_options --with-branding=application/iceweasel-uxp/branding/iceweasel" >> "${S}"/.mozconfig
+	#Build Serpent
+    echo "ac_add_options --enable-application=basilisk" >> "${S}"/.mozconfig
+    echo "ac_add_options --disable-official-branding" >> "${S}"/.mozconfig
 	echo "ac_add_options --prefix='${EPREFIX}/usr'" >> "${S}"/.mozconfig
 	echo "export MOZILLA_OFFICIAL=0"
 	echo "export MOZ_TELEMETRY_REPORTING=0"
 	echo "export MOZ_ADDON_SIGNING=1"
 	echo "export MOZ_REQUIRE_SIGNING=0"
-
-    if [[ $(gcc-major-version) -lt 4 ]]; then
-		append-cxxflags -fno-stack-protector
-	fi
 
 	# workaround for funky/broken upstream configure...
 	SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
@@ -252,16 +206,36 @@ src_install() {
 	# Pax mark xpcshell for hardened support, only used for startupcache creation.
 	pax-mark m "${BUILD_OBJ_DIR}"/dist/bin/xpcshell
 
-	MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-	DESTDIR="${D}" ${S}/mach install || die "Failed to install"
-	# Install language packs
+    cd "${S}" || die
+    MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
+	DESTDIR="${D}" ./mach install || die "Failed to install"
+
+	# Rename everything from basilisk to serpent so we can co-install with branded Basilisk
+	mv "${D}/usr/lib/basilisk-52.9.0" "${D}/usr/lib/serpent-52.9.0" || die
+	mv "${D}/usr/lib/serpent-52.9.0/basilisk" "${D}/usr/lib/serpent-52.9.0/serpent" || die
+	mv "${D}/usr/lib/serpent-52.9.0/basilisk-bin" "${D}/usr/lib/serpent-52.9.0/serpent-bin" || die
+	mv "${D}/usr/lib/basilisk-devel-52.9.0"  "${D}/usr/lib/serpent-devel-52.9.0" || die
+	mv "${D}/usr/include/basilisk-52.9.0" "${D}/usr/include/serpent-52.9.0" || die
+	mv "${D}/usr/share/idl/basilisk-52.9.0" "${D}/usr/share/idl/serpent-52.9.0" || die
+	rm "${D}/usr/bin/basilisk" || die
+	ln -s "/usr/lib/serpent-52.9.0/serpent" "${D}/usr/bin/serpent" || die
+	rm "${D}/usr/lib/serpent-devel-52.9.0/bin" || die
+	rm "${D}/usr/lib/serpent-devel-52.9.0/idl" || die
+	rm "${D}/usr/lib/serpent-devel-52.9.0/include" || die
+	rm "${D}/usr/lib/serpent-devel-52.9.0/lib" || die
+	ln -s "/usr/lib/serpent-52.9.0" "${D}/usr/lib/serpent-devel-52.9.0/bin" || die
+	ln -s "/usr/share/idl/serpent-52.9.0" "${D}/usr/lib/serpent-devel-52.9.0/idl" || die
+	ln -s "/usr/include/serpent-52.9.0" "${D}/usr/lib/serpent-devel-52.9.0/include" || die
+	ln -s "/usr/lib/serpent-devel-52.9.0/sdk/lib" "${D}/usr/lib/serpent-devel-52.9.0/lib" || die
+
+    # Install language packs
 	# mozlinguas_src_install
 
 	local size sizes icon_path icon name
 		sizes="16 32 48"
-		icon_path="${S}/application/iceweasel-uxp/branding/iceweasel"
-		icon="iceweasel"
-		name="Iceweasel-UXP"
+		icon_path="${S}/basilisk/branding/unofficial"
+		icon="serpent"
+		name="Serpent Browser"
 
 	# Install icons and .desktop for menu entry
 	for size in ${sizes}; do
@@ -285,13 +259,7 @@ src_install() {
 	fi
 
 	# Required in order to use plugins and even run firefox on hardened.
-	pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{iceweasel,iceweasel-bin,plugin-container}
-
-	# Apply privacy user.js
-	if use privacy ; then
-	insinto "/usr/lib/${PN}/browser/defaults/preferences"
-	newins "${FILESDIR}/privacy.js-1" "iceweasel-branding.js"
-	fi
+	pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{serpent,serpent-bin,plugin-container}
 
 }
 
