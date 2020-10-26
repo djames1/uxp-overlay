@@ -60,8 +60,7 @@ src_unpack() {
 pkg_setup() {
 	moz_pkgsetup
 
-	# Avoid PGO profiling problems due to enviroment leakage
-	# These should *always* be cleaned up anyway
+	# Clean garbage
 	unset DBUS_SESSION_BUS_ADDRESS \
 		DISPLAY \
 		ORBIT_SOCKETDIR \
