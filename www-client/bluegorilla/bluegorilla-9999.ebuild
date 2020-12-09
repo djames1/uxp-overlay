@@ -27,7 +27,7 @@ HOMEPAGE="https://github.com/djames1/BlueGorilla"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+calendar hardened hwaccel jack +privacy pulseaudio selinux -disable-startupcache test system-icu +system-zlib +system-bz2 +system-hunspell system-sqlite +system-ffi +system-pixman +system-jpeg"
+IUSE="+calendar hardened hwaccel jack +privacy pulseaudio -selinux -disable-startupcache -test -system-icu -system-zlib -system-bz2 -system-hunspell -system-ffi -system-pixman -system-jpeg"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -40,12 +40,10 @@ RDEPEND="
 	system-zlib? ( sys-libs/zlib )
 	system-bz2? ( app-arch/bzip2 )
 	system-hunspell? ( app-text/hunspell )
-	system-sqlite? ( dev-db/sqlite )
 	system-ffi? ( dev-libs/libffi )
 	system-pixman? ( x11-libs/pixman )
 	system-jpeg? ( media-libs/libjpeg-turbo )
 	system-libevent? ( dev-libs/libevent )
-	system-libvpx? ( media-libs/libvpx )
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
@@ -123,16 +121,10 @@ src_configure() {
 		echo "ac_add_options --disable-pulseaudio" >> "${S}"/.mozconfig
 	fi
 
-	if use system-sqlite ; then
-        echo "WARNING: Building with System SQLite is strongly discouraged and will likely break. See UXP bug #265"
-        echo "ac_add_options --enable-system-sqlite" >> "${S}"/.mozconfig
-    fi
-
     if use disable-startupcache ; then
         echo "ac_add_options --disable-startupcache" >> "${S}"/.mozconfig
 		echo "ac_add_options --disable-precompiled-startupcache" >> "${S}"/.mozconfig
     fi
-
 
 	if use system-icu ; then
         echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
@@ -162,10 +154,6 @@ src_configure() {
         echo "ac_add_options --with-system-jpeg" >> "${S}"/.mozconfig
     fi
 
-	if use system-libvpx ; then
-	echo "ac_add_options --with-system-libvpx" >> "${S}"/.mozconfig
-	fi
-
 	if use system-libevent ; then
 	echo "ac_add_options --with-system-libevent" >> "${S}"/.mozconfig
 	fi
@@ -177,14 +165,14 @@ src_configure() {
 	echo "ac_add_options --disable-eme" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-updater" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-crashreporter" >> "${S}"/.mozconfig
+	
 	if use privacy ; then
-	echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
-	#echo "ac_add_options --disable-webspeech" >> "${S}"/.mozconfig
-	#echo "ac_add_options --disable-webspeechtestbackend" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
-	echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
+	    echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
+	    echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
+	    echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
 	fi
-	echo "ac_add_options --disable-synth-pico" >> "${S}"/.mozconfig
+
+    echo "ac_add_options --disable-synth-pico" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-camera" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-ril" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-bt" >> "${S}"/.mozconfig
