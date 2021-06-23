@@ -10,8 +10,8 @@ MOZCONFIG_OPTIONAL_WIFI=0
 
 inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.52 pax-utils xdg-utils autotools
 
-UXP_VER="RELBASE_20200408"
-SRC_URI=""
+#UXP_VER="RELBASE_20200408"
+#SRC_URI=""
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
@@ -22,12 +22,13 @@ if [[ ${PV} == 9999 ]]; then
 	S="${WORKDIR}/${P}"
 fi
 
+
 DESCRIPTION="Mail and browser suite forked from Seamonkey and built on the the Unified XUL Platform."
 HOMEPAGE="https://github.com/djames1/BlueGorilla"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+calendar hardened hwaccel jack +privacy pulseaudio -selinux -disable-startupcache -test -system-icu -system-zlib -system-bz2 -system-hunspell -system-ffi -system-pixman -system-jpeg"
+IUSE="+calendar hardened hwaccel jack +privacy pulseaudio -selinux -disable-startupcache -test +system-icu +system-zlib +system-bz2 +system-hunspell +system-ffi +system-pixman +system-jpeg +system-libevent +system-libvpx"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -42,8 +43,9 @@ RDEPEND="
 	system-hunspell? ( app-text/hunspell )
 	system-ffi? ( dev-libs/libffi )
 	system-pixman? ( x11-libs/pixman )
-	system-jpeg? ( media-libs/libjpeg-turbo )
+	system-jpeg? ( virtual/jpeg )
 	system-libevent? ( dev-libs/libevent )
+	system-libvpx? ( media-libs/libvpx )
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
@@ -80,13 +82,13 @@ pkg_pretend() {
 	else
 		CHECKREQS_DISK_BUILD="4G"
 	fi
-    check-reqs_pkg_setup
+	check-reqs_pkg_setup
 }
 
 src_prepare() {
-    eapply $FILESDIR/0001-gcc-hardened-workaround.patch
+	eapply $FILESDIR/0001-gcc-hardened-workaround.patch
 
-    # Allow user to apply any additional patches without modifing ebuild
+	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
 }
 
@@ -121,26 +123,26 @@ src_configure() {
 		echo "ac_add_options --disable-pulseaudio" >> "${S}"/.mozconfig
 	fi
 
-    if use disable-startupcache ; then
-        echo "ac_add_options --disable-startupcache" >> "${S}"/.mozconfig
+	if use disable-startupcache ; then
+		echo "ac_add_options --disable-startupcache" >> "${S}"/.mozconfig
 		echo "ac_add_options --disable-precompiled-startupcache" >> "${S}"/.mozconfig
-    fi
+	fi
 
 	if use system-icu ; then
-        echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
-    fi
+		echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
+	fi
 
 	if use system-zlib ; then
-        echo "ac_add_options --with-system-zlib" >> "${S}"/.mozconfig
-        fi
+		echo "ac_add_options --with-system-zlib" >> "${S}"/.mozconfig
+	fi
 
 	if use system-bz2 ; then
-        echo "ac_add_options --with-system-bz2" >> "${S}"/.mozconfig
-        fi
+		echo "ac_add_options --with-system-bz2" >> "${S}"/.mozconfig
+	fi
 
 	if use system-hunspell ; then
-        echo "ac_add_options --enable-system-hunspell" >> "${S}"/.mozconfig
-    fi
+		echo "ac_add_options --enable-system-hunspell" >> "${S}"/.mozconfig
+	fi
 
 	if use system-ffi ; then
 		echo "ac_add_options --enable-system-ffi" >> "${S}"/.mozconfig
@@ -154,6 +156,12 @@ src_configure() {
         echo "ac_add_options --with-system-jpeg" >> "${S}"/.mozconfig
     fi
 
+	if use system-libvpx; then
+		mozconfig_enable system-libvpx
+	else
+		mozconfig_disable system-libvpx
+	fi
+
 	if use system-libevent ; then
 	echo "ac_add_options --with-system-libevent" >> "${S}"/.mozconfig
 	fi
@@ -165,14 +173,14 @@ src_configure() {
 	echo "ac_add_options --disable-eme" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-updater" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-crashreporter" >> "${S}"/.mozconfig
-	
+
 	if use privacy ; then
 	    echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
 	    echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
 	    echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
 	fi
 
-    echo "ac_add_options --disable-synth-pico" >> "${S}"/.mozconfig
+	echo "ac_add_options --disable-synth-pico" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-camera" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-ril" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-b2g-bt" >> "${S}"/.mozconfig
@@ -198,7 +206,7 @@ src_configure() {
 		append-cxxflags -fno-stack-protector
 	fi
 
-    # Disable jemalloc on musl
+	# Disable jemalloc on musl
 	if use elibc_musl; then
         echo "ac_add_options --disable-jemalloc" >> "${S}"/.mozconfig
     fi
