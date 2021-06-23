@@ -117,7 +117,6 @@ RDEPEND=">=app-text/hunspell-1.2:=
 	startup-notification? ( >=x11-libs/startup-notification-0.8 )
 	>=dev-libs/glib-2.26:2
 	>=sys-libs/zlib-1.2.3
-	>=virtual/libffi-3.0.10
 	media-video/ffmpeg
 	x11-libs/libX11
 	x11-libs/libXcomposite
