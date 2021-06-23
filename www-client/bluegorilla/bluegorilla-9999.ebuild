@@ -130,11 +130,11 @@ src_configure() {
 		echo "ac_add_options --disable-precompiled-startupcache" >> "${S}"/.mozconfig
 	fi
 
-	if use system-icu ; then
-		echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
-	else
-		echo "ac_add_options --without-system-icu" >> "${S}"/.mozconfig
-	fi
+	#if use system-icu ; then
+	#	echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
+	#else
+	#	echo "ac_add_options --without-system-icu" >> "${S}"/.mozconfig
+	#fi
 
 	if use system-zlib ; then
 		echo "ac_add_options --with-system-zlib" >> "${S}"/.mozconfig
