@@ -28,7 +28,7 @@ HOMEPAGE="https://github.com/djames1/BlueGorilla"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+calendar hardened hwaccel jack +privacy pulseaudio -selinux -disable-startupcache -test +system-icu +system-zlib +system-bz2 +system-hunspell +system-ffi +system-pixman +system-jpeg +system-libevent +system-libvpx"
+IUSE="+calendar hardened hwaccel jack pulseaudio -selinux -disable-startupcache -test -system-icu +system-zlib +system-bz2 +system-hunspell +system-ffi +system-pixman +system-jpeg +system-libevent +system-libvpx +system-cairo"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
@@ -46,6 +46,7 @@ RDEPEND="
 	system-jpeg? ( virtual/jpeg )
 	system-libevent? ( dev-libs/libevent )
 	system-libvpx? ( media-libs/libvpx )
+	system-cairo? ( x11-libs/cairo )
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
@@ -130,40 +131,62 @@ src_configure() {
 
 	if use system-icu ; then
 		echo "ac_add_options --with-system-icu" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --without-system-icu" >> "${S}"/.mozconfig
 	fi
 
 	if use system-zlib ; then
 		echo "ac_add_options --with-system-zlib" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --without-system-zlib" >> "${S}"/.mozconfig
 	fi
 
 	if use system-bz2 ; then
 		echo "ac_add_options --with-system-bz2" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --without-system-bz2" >> "${S}"/.mozconfig
 	fi
 
 	if use system-hunspell ; then
 		echo "ac_add_options --enable-system-hunspell" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --disable-system-hunspell" >> "${S}"/.mozconfig
 	fi
 
 	if use system-ffi ; then
 		echo "ac_add_options --enable-system-ffi" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --disable-system-ffi" >> "${S}"/.mozconfig
 	fi
 
 	if use system-pixman ; then
 		echo "ac_add_options --enable-system-pixman" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --disable-system-pixman" >> "${S}"/.mozconfig
 	fi
 
 	if use system-jpeg ; then
-        echo "ac_add_options --with-system-jpeg" >> "${S}"/.mozconfig
-    fi
+		echo "ac_add_options --with-system-jpeg" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --without-system-jpeg" >> "${S}"/.mozconfig
+	fi
 
 	if use system-libvpx; then
-		mozconfig_enable system-libvpx
+		echo "ac_add_options --enable-system-libvpx" >> "${S}"/.mozconfig
 	else
-		mozconfig_disable system-libvpx
+		echo "ac_add_options --disable-system-libvpx" >> "${S}"/.mozconfig
+	fi
+
+	if use system-cairo; then
+		echo "ac_add_options --enable-system-cairo" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --disable-system-cairo" >> "${S}"/.mozconfig
 	fi
 
 	if use system-libevent ; then
-	echo "ac_add_options --with-system-libevent" >> "${S}"/.mozconfig
+		echo "ac_add_options --with-system-libevent" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_options --without-system-libevent" >> "${S}"/.mozconfig
 	fi
 
 	# Favor Privacy over features at compile time
@@ -173,11 +196,14 @@ src_configure() {
 	echo "ac_add_options --disable-eme" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-updater" >> "${S}"/.mozconfig
 	echo "ac_add_options --disable-crashreporter" >> "${S}"/.mozconfig
+	echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
+	echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
 
-	if use privacy ; then
-	    echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
-	    echo "ac_add_options --disable-mozril-geoloc" >> "${S}"/.mozconfig
-	    echo "ac_add_options --disable-nfc" >> "${S}"/.mozconfig
+
+	if use webrtc; then
+		echo "ac_add_options --enable-webrtc" >> "${S}"/.mozconfig
+	else
+		echo "ac_add_outions --disable-webrtc" >> "${S}"/.mozconfig
 	fi
 
 	echo "ac_add_options --disable-synth-pico" >> "${S}"/.mozconfig
