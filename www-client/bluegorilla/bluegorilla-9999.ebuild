@@ -28,7 +28,8 @@ HOMEPAGE="https://github.com/djames1/BlueGorilla"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="+calendar hardened hwaccel jack pulseaudio -selinux -disable-startupcache -test -system-icu +system-zlib +system-bz2 +system-hunspell +system-ffi +system-pixman +system-jpeg +system-libevent +system-libvpx +system-cairo"
+# TODO: re-add system-icu use flag when system-icu is re-enabled in UXP tree
+IUSE="+calendar hardened hwaccel jack pulseaudio -selinux -disable-startupcache -test +system-zlib +system-bz2 +system-hunspell +system-ffi +system-pixman +system-jpeg +system-libevent +system-libvpx +system-cairo"
 RESTRICT="mirror"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
