@@ -204,7 +204,7 @@ src_configure() {
 	if use webrtc; then
 		echo "ac_add_options --enable-webrtc" >> "${S}"/.mozconfig
 	else
-		echo "ac_add_outions --disable-webrtc" >> "${S}"/.mozconfig
+		echo "ac_add_options --disable-webrtc" >> "${S}"/.mozconfig
 	fi
 
 	echo "ac_add_options --disable-synth-pico" >> "${S}"/.mozconfig
